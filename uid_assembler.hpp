@@ -59,6 +59,8 @@ public:
         {
             throw "exception";
         }
+        
+        //std::cout << "add called, size: " << fields.size() << std::endl;
     }
     
     void get_uid() const
@@ -119,8 +121,11 @@ public:
         std::vector<count_type>::const_iterator it2{vector_counter_.cbegin()};
         typename std::map<T, count_type>::const_iterator it1_end{fields_.cend()};
         std::vector<count_type>::const_iterator it2_end{vector_counter_.cend()};
-        for(; (it1 != it1_end) || (it2 != it2_end); ++ it1, ++ it2)
+        for(; /*(it1 != it1_end) || (it2 != it2_end)*/; ++ it1, ++ it2)
         {
+            if(it1 == it1_end) break;
+            if(it2 == it2_end) break;
+        
             if(it1->second != *it2) return false;
         }
         return true;
@@ -141,8 +146,10 @@ public:
         std::fill(v.begin(), v.end(), static_cast<U>(0));
     }
     
-    void print_vector_counter(std::ostream &os, const std::vector<count_type>& vector_counter)
+    void print_vector_counter(std::ostream &os) //, const std::vector<count_type>& vector_counter)
     {
+        //std::cout << "print_vector_counter called, size: " << vector_counter.size() << std::endl;
+        
         std::vector<count_type>::const_iterator it{vector_counter.cbegin()};
         for(; it != vector_counter.cend(); ++ it)
         {
@@ -154,11 +161,27 @@ public:
         }
     }
     
+    void print_fields(std::ostream& os)
+    {
+        //std::cout << "print_fields called, size: " << fields.size() << std::endl;
+        
+        typename std::map<T, count_type>::const_iterator it{fields.cbegin()};
+        for(; it != fields.cend(); ) //++ it)
+        {
+            os << it->first << ":" << it->second;
+            if(++ it != fields.cend())
+            {
+                os << " ";
+            }
+        }
+    }
+    
     bool recurse(const count_type total) //std::vector<count_type>& vector_counter, const count_type total, count_type &uid)
     {
         //std::cout << "total=" << total << std::endl;
-        //print_vector_counter(std::cout, vector_counter);
-        //std::cout << std::endl;
+        std::cout << "uid=" << uid << " ";
+        print_vector_counter(std::cout); //, vector_counter);
+        std::cout << std::endl;
         //std::cin.get();
     
         if(check_sequence(fields, vector_counter))
@@ -173,6 +196,8 @@ public:
             std::vector<count_type>::iterator it{vector_counter.end() - 1};
             for(; ; /*--it*/)
             {
+                //std::cout << "index=" << std::distance(vector_counter.begin(), it) << " value=" << *it << std::endl;
+                
                 if(*it != 0)
                 {
                     //std::cout << "found a non-zero entry at position" << std::distance(vector_counter.begin(), it) << std::endl;
@@ -188,7 +213,9 @@ public:
                         clear_vector(vector_counter);
                         // set final entry of vector counter to total + 1
                         vector_counter.back() = total + 1;
+                        // changed contents so did not find correct sequence this function call
                         ++ uid;
+                        
                         //return recurse(vector_counter, total + 1, uid);
                         return recurse(total + 1);
                     }
@@ -223,8 +250,13 @@ public:
                     if(it == vector_counter.begin())
                     {
                         //std::cout << "zero case, or shifted maximally, recurse" << std::endl;
+                        // set all entries of vector_counter to zero
                         clear_vector(vector_counter);
+                        // set final entry of vector counter to total + 1
                         vector_counter.back() = total + 1;
+                        // changed contents so did not find correct sequence this function call
+                        ++ uid;
+                        
                         //return recurse(vector_counter, total + 1, uid);
                         return recurse(total + 1);
                     }
@@ -236,6 +268,8 @@ public:
     
     count_type generate()
     {
+        //std::cout << "generate" << std::endl;
+    
         if(ready == false)
         {
             throw "exception";
@@ -249,6 +283,9 @@ public:
         clear_vector(vector_counter);
         //recurse(vector_counter, 0, uid);
         recurse(0);
+        
+        //std::cout << "uid=" << uid << std::endl;
+        
         return uid;
     }
     
