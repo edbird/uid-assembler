@@ -179,9 +179,9 @@ public:
     bool recurse(const count_type total) //std::vector<count_type>& vector_counter, const count_type total, count_type &uid)
     {
         //std::cout << "total=" << total << std::endl;
-        std::cout << "uid=" << uid << " ";
-        print_vector_counter(std::cout); //, vector_counter);
-        std::cout << std::endl;
+        //std::cout << "uid=" << uid << " ";
+        //print_vector_counter(std::cout); //, vector_counter);
+        //std::cout << std::endl;
         //std::cin.get();
     
         if(check_sequence(fields, vector_counter))
